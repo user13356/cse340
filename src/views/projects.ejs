@@ -1,30 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
+<%- include('partials/header') %>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects</title>
-    <link rel="stylesheet" href="/css/main.css">
-</head>
-
-<body>
-    <nav>
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/organizations">Organizations</a></li>
-            <li><a href="/projects">Service Projects</a></li>
-            <li><a href="/categories">Categories</a></li>
-        </ul>
-    </nav>
     <main>
-        <h1>Service Projects</h1>
-        <p>Coming Soon!</p>
-        
+        <h1>
+            <%= title %>
+        </h1>
+
         <h3>We handle your business projects regardless of size.</h3>
 
-        <img class="main-logo" src="images/image_sp.webp" alt="CSE 340 Backend Projects">
-    </main>
-</body>
+        <img class="main-logo" src="images/image_sp.webp" alt="CSE 340 Backend Service Projects">
 
-</html>
+    </main>
+
+    <%- include('partials/footer') %>
