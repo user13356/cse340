@@ -35,7 +35,7 @@ app.get('/', async (req, res) => {
 });
 
 app.get('/organizations', async (req, res) => {
-    const title = 'Our Partner Organizations';
+    const title = 'Organizations';
     res.render('organizations', { title });
 });
 
