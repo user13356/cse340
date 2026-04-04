@@ -6,6 +6,7 @@ import path from 'path';
 // Import your database functions
 import { getAllOrganizations } from './src/models/organizations.js';
 import { getAllCategories } from './src/models/categories.js';
+import { getAllProjects } from './src/models/projects.js';
 import { testConnection } from './src/models/db.js';
 
 // Environment and port
@@ -31,14 +32,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
     res.render('home', { title: 'Home' });
 });
-
 // Organizations page
 app.get('/organizations', async (req, res) => {
     try {
         const organizations = await getAllOrganizations();
-        res.render('organizations', { title: 'Our Partner Organizations', organizations });
+        const title = 'Our Partner Organizations';
+        res.render('organizations', { title, organizations });
     } catch (error) {
-        console.error('Error fetching organizations:', error);
+        console.error(error);
         res.status(500).send('Error loading organizations');
     }
 });
@@ -49,14 +50,9 @@ app.get('/projects', (req, res) => {
 });
 
 // Categories page
-app.get('/categories', async (req, res) => {
-    try {
-        const categories = await getAllCategories();
-        res.render('categories', { title: 'Service Project Categories', categories });
-    } catch (error) {
-        console.error('Error fetching categories:', error);
-        res.status(500).send('Error loading categories');
-    }
+app.get('/categories', (req, res) => {
+    const title = 'Service Project Categories';
+    res.render('categories', { title });
 });
 
 // Example category links (optional, adjust as needed)
