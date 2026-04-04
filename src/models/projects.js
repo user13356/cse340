@@ -5,7 +5,7 @@ export const getAllProjects = async () => {
     const query = `
         SELECT 
             sp.project_id,
-            sp.name AS title,     
+            sp.name AS title,           
             sp.description,
             o.name AS organization_name
         FROM service_project sp
@@ -22,3 +22,4 @@ export const getAllProjects = async () => {
         throw error;
     }
 };
+

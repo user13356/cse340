@@ -6,8 +6,14 @@
     <ul>
         <% projects.forEach(project => { %>
             <li>
-                <strong>Project:</strong> <%= project.title %> (<%= project.organization_name %>)<br>
-                <%= project.description %>
+                <strong>
+                    <%= project.project_date ? project.project_date.toDateString() : 'Date TBD' %>:
+                    <%= project.title %> (<%= project.organization_name %>)
+                </strong>
+                <p><%= project.description %></p>
+                <% if (project.location) { %>
+                    <p>Location: <%= project.location %></p>
+                <% } %>
             </li>
         <% }); %>
     </ul>
