@@ -1,42 +1,44 @@
 <%- include('partials/header') %>
 
-    <main>
-        <h1>
-            <%= title %>
-        </h1>
+<main>
+    <h1><%= title %></h1>
 
-        <h3>We connect you and your business to international wealthy partners attracting the right influence.</h3>
+    <h3>
+        We connect you and your business to international wealthy partners attracting the right influence.
+    </h3>
 
-        <img class="main-logo" src="images/image_org.webp" alt="CSE 340 Backend Organizations">
+    <img class="main-logo" src="/images/image_org.webp" alt="CSE 340 Backend Organizations">
 
-        <!-- Section for database organizations -->
-        <section>
-            <h2>Our Partner Organizations</h2>
+    <!-- Section for database organizations -->
+    <section>
+        <h2>Our Partner Organizations</h2>
 
-            <ul>
-                <% organizations.forEach(organization=> { %>
-                    <li>
-                        <p></p>
+        <ul>
+            <% organizations.forEach(organization => { %>
+                <li style="margin-bottom: 20px;">
 
-                        <p></p>
-                        <strong>
-                            <%= organization.name %>
-                                <p></p>
-                                <img src="/images/<%= organization.logo_filename %>" alt="<%= organization.name %> logo"
-                                    width="100">
-                        </strong><br>
-                        <p></p>
-                        <%= organization.description %><br>
-                            <p></p>
-                            <%= organization.contact_email %>
-                                <p></p>
-                                <p></p>
-                    </li>
-                    <% }); %>
-            </ul>
-        </section>
-           <p></p>
-    <p></p>
-    </main>
- 
-    <%- include('partials/footer') %>
+                    <!-- Logo -->
+                    <img 
+                        src="/images/<%= organization.logo_filename %>" 
+                        alt="<%= organization.name %> logo"
+                        width="100"
+                        style="display:block; margin-bottom:10px;"
+                    >
+
+                    <!-- Name -->
+                    <strong><%= organization.name %></strong><br>
+
+                    <!-- Description -->
+                    <p><%= organization.description %></p>
+
+                    <!-- Email -->
+                    <p><%= organization.contact_email %></p>
+
+                </li>
+            <% }); %>
+        </ul>
+    </section>
+
+</main>
+
+<%- include('partials/footer') %>
