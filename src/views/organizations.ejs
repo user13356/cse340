@@ -9,6 +9,33 @@
 
         <img class="main-logo" src="images/image_org.webp" alt="CSE 340 Backend Organizations">
 
+        <!-- Section for database organizations -->
+        <section>
+            <h2>Our Partner Organizations</h2>
+
+            <ul>
+                <% organizations.forEach(organization=> { %>
+                    <li>
+                        <p></p>
+
+                        <p></p>
+                        <strong>
+                            <%= organization.name %>
+                                <p></p>
+                                <img src="/images/<%= organization.logo_filename %>" alt="<%= organization.name %> logo"
+                                    width="100">
+                        </strong><br>
+                        <p></p>
+                        <%= organization.description %><br>
+                            <p></p>
+                            <%= organization.contact_email %>
+                                <p></p>
+                                <p></p>
+                    </li>
+
+                    <% }); %>
+            </ul>
+        </section>
     </main>
 
     <%- include('partials/footer') %>

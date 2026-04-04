@@ -1,3 +1,6 @@
+import { getAllCategories } from './src/models/categories.js';
+import { getAllOrganizations } from './src/models/organizations.js';
+import { testConnection } from './src/models/db.js';
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -35,8 +38,10 @@ app.get('/', async (req, res) => {
 });
 
 app.get('/organizations', async (req, res) => {
-    const title = 'Organizations';
-    res.render('organizations', { title });
+    const organizations = await getAllOrganizations();
+    const title = 'Our Partner Organizations';
+
+    res.render('organizations', { title, organizations });
 });
 
 app.get('/projects', async (req, res) => {
@@ -45,13 +50,38 @@ app.get('/projects', async (req, res) => {
 
 });
 
-app.get('/categories', async (req, res) => {
-    const title = 'Categories';
-    res.render('categories', { title });
 
+app.get('/categories', async (req, res) => {
+    try {
+        const categories = await getAllCategories();
+        const title = 'Service Project Categories';
+
+        res.render('categories', { title, categories });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error loading categories');
+    }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running at http://127.0.0.1:${PORT}`);
-    console.log(`Environment: ${NODE_ENV}`);
+
+//
+app.get('/', (req, res) => {
+    res.render('index');
+});
+//
+
+
+//
+
+
+
+//
+app.listen(PORT, async () => {
+    try {
+        await testConnection();
+        console.log(`Server is running at http://127.0.0.1:${PORT}`);
+        console.log(`Environment: ${process.env.NODE_ENV}`);
+    } catch (error) {
+        console.error('Error connecting to the database:', error);
+    }
 });
