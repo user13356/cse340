@@ -1,86 +1,86 @@
-import { getAllCategories } from './src/models/categories.js';
-import { getAllOrganizations } from './src/models/organizations.js';
-import { testConnection } from './src/models/db.js';
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import { getAllCategories } from './src/models/categories.js';
+import { getAllOrganizations } from './src/models/organizations.js';
+import { testConnection } from './src/models/db.js';
 
-// Define the the application environment
+// Define environment and port
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
-
-// Define the port number the server will listen on
 const PORT = process.env.PORT || 3000;
 
+// Setup __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Initialize Express
 const app = express();
 
-// Set EJS as the templating engine
+// Set EJS as templating engine
 app.set('view engine', 'ejs');
-
-// Tell Express where to find your templates
 app.set('views', path.join(__dirname, 'src/views'));
 
-/**
-  * Configure Express middleware
-  */
-
-// Serve static files from the public directory
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 /**
-  * Routes
-  */
-app.get('/', async (req, res) => {
+ * Routes
+ */
+
+// Home page
+app.get('/', (req, res) => {
     const title = 'Home';
     res.render('home', { title });
 });
 
+// Organizations page
 app.get('/organizations', async (req, res) => {
-    const organizations = await getAllOrganizations();
-    const title = 'Our Partner Organizations';
-
-    res.render('organizations', { title, organizations });
+    try {
+        const organizations = await getAllOrganizations();
+        const title = 'Our Partner Organizations';
+        res.render('organizations', { title, organizations });
+    } catch (error) {
+        console.error('Error loading organizations:', error);
+        res.status(500).send('Error loading organizations');
+    }
 });
 
-app.get('/projects', async (req, res) => {
+// Projects page
+app.get('/projects', (req, res) => {
     const title = 'Service Projects';
     res.render('projects', { title });
-
 });
 
-
+// Categories page
 app.get('/categories', async (req, res) => {
     try {
         const categories = await getAllCategories();
         const title = 'Service Project Categories';
 
+        if (!categories || categories.length === 0) {
+            console.warn('No categories found in the database.');
+        }
+
         res.render('categories', { title, categories });
     } catch (error) {
-        console.error(error);
+        console.error('Error loading categories:', error);
         res.status(500).send('Error loading categories');
     }
 });
 
-
-//
-app.get('/', (req, res) => {
-    res.render('index');
+// Catch-all route for unknown pages
+app.use((req, res) => {
+    res.status(404).send('Page not found');
 });
-//
 
-
-//
-
-
-
-//
+/**
+ * Start server
+ */
 app.listen(PORT, async () => {
     try {
         await testConnection();
         console.log(`Server is running at http://127.0.0.1:${PORT}`);
-        console.log(`Environment: ${process.env.NODE_ENV}`);
+        console.log(`Environment: ${NODE_ENV}`);
     } catch (error) {
         console.error('Error connecting to the database:', error);
     }
