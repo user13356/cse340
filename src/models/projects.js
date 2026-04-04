@@ -1,7 +1,7 @@
 // src/models/projects.js
 import db from './db.js';
 
-export const getAllProjects = async () => {
+const getAllProjects = async () => {
     const query = `
         SELECT 
             sp.project_id,
@@ -23,3 +23,4 @@ export const getAllProjects = async () => {
     }
 };
 
+export { getAllProjects };

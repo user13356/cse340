@@ -59,15 +59,16 @@ app.get('/projects', async (req, res) => {
 
 
 // Categories page
-app.get('/categories', (req, res) => {
-    const title = 'Service Project Categories';
-    res.render('categories', { title });
-});
+app.get('/categories', async (req, res) => {
+    try {
+        const categories = await getAllCategories();
+        const title = 'Service Project Categories';
 
-// Example category links (optional, adjust as needed)
-app.get('/categories/:name', (req, res) => {
-    const categoryName = req.params.name;
-    res.send(`You clicked category: ${categoryName}`);
+        res.render('categories', { title, categories });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error loading categories');
+    }
 });
 
 // -------- START SERVER -------- //
