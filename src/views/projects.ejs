@@ -1,14 +1,16 @@
 <%- include('partials/header') %>
 
-    <main>
-        <h1>
-            <%= title %>
-        </h1>
+<main>
+    <h1><%= title %></h1>
 
-        <h3>We handle your business projects regardless of size.</h3>
+    <ul>
+        <% projects.forEach(project => { %>
+            <li>
+                <strong>Project:</strong> <%= project.title %> (<%= project.organization_name %>)<br>
+                <%= project.description %>
+            </li>
+        <% }); %>
+    </ul>
+</main>
 
-        <img class="main-logo" src="images/image_sp.webp" alt="CSE 340 Backend Service Projects">
-
-    </main>
-
-    <%- include('partials/footer') %>
+<%- include('partials/footer') %>

@@ -1,13 +1,24 @@
+// src/models/projects.js
 import db from './db.js';
 
-const getAllProjects = async () => {
+export const getAllProjects = async () => {
     const query = `
-        SELECT organization_id, title, description, location, project_date
-        FROM public.project;
+        SELECT 
+            sp.project_id,
+            sp.name AS title,     
+            sp.description,
+            o.name AS organization_name
+        FROM service_project sp
+        JOIN organization o 
+          ON sp.organization_id = o.organization_id
+        ORDER BY sp.project_id ASC;
     `;
 
-    const result = await db.query(query);
-    return result.rows;
+    try {
+        const result = await db.query(query);
+        return result.rows;
+    } catch (error) {
+        console.error('Error loading projects:', error);
+        throw error;
+    }
 };
-
-export { getAllProjects };

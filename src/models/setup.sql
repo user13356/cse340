@@ -31,3 +31,12 @@ CREATE TABLE project_category (
     PRIMARY KEY (project_id, category_id)
 );
 
+CREATE TABLE service_project (
+    project_id SERIAL PRIMARY KEY,
+    organization_id INT NOT NULL,
+    title VARCHAR(150) NOT NULL,
+    description TEXT NOT NULL,
+    location VARCHAR(150),
+    project_date DATE,
+    FOREIGN KEY (organization_id) REFERENCES organization(organization_id) ON DELETE CASCADE
+);

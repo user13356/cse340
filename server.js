@@ -45,9 +45,18 @@ app.get('/organizations', async (req, res) => {
 });
 
 // Projects page
-app.get('/projects', (req, res) => {
-    res.render('projects', { title: 'Service Projects' });
+
+app.get('/projects', async (req, res) => {
+    try {
+        const projects = await getAllProjects();
+        const title = 'Service Projects';
+        res.render('projects', { title, projects });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error loading projects');
+    }
 });
+
 
 // Categories page
 app.get('/categories', (req, res) => {
