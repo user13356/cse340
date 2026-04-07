@@ -12,21 +12,26 @@ let db = null;
 if (process.env.NODE_ENV === 'development' && process.env.ENABLE_SQL_LOGGING === 'true') {
     db = {
         async query(text, params) {
+            const queryText = text ? text.replace(/\s+/g, ' ').trim() : 'NO QUERY';
+
             try {
                 const start = Date.now();
                 const res = await pool.query(text, params);
                 const duration = Date.now() - start;
+
                 console.log('Executed query:', {
-                    text: text.replace(/\s+/g, ' ').trim(),
+                    text: queryText,
                     duration: `${duration}ms`,
                     rows: res.rowCount
                 });
+
                 return res;
             } catch (error) {
                 console.error('Error in query:', {
-                    text: text.replace(/\s+/g, ' ').trim(),
+                    text: queryText,
                     error: error.message
                 });
+
                 throw error;
             }
         },
