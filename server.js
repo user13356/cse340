@@ -26,6 +26,77 @@ app.set('views', path.join(__dirname, 'src/views'));
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
+//
+// -------- DATABASE SYNC -------- //
+const syncDatabase = async () => {
+    try {
+        console.log('Syncing database...');
+
+        // Create tables if they don't exist
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS organization (
+                organization_id SERIAL PRIMARY KEY,
+                name VARCHAR(150) NOT NULL,
+                description TEXT NOT NULL,
+                contact_email VARCHAR(255) NOT NULL,
+                logo_filename VARCHAR(255) NOT NULL
+            );
+        `);
+
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS category (
+                category_id SERIAL PRIMARY KEY,
+                name VARCHAR(100) NOT NULL
+            );
+        `);
+
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS service_project (
+                project_id SERIAL PRIMARY KEY,
+                organization_id INT REFERENCES organization(organization_id),
+                name VARCHAR(150) NOT NULL,
+                description TEXT,
+                location VARCHAR(150),
+                project_date DATE
+            );
+        `);
+
+        // Insert data ONLY if empty
+        const orgCheck = await db.query('SELECT COUNT(*) FROM organization');
+        if (parseInt(orgCheck.rows[0].count) === 0) {
+            await db.query(`
+                INSERT INTO organization (name, description, contact_email, logo_filename)
+                VALUES
+                ('BrightFuture Builders', 'Community construction projects.', 'info@brightfuturebuilders.org', 'brightfuture-logo.png'),
+                ('GreenHarvest Growers', 'Urban farming group.', 'contact@greenharvest.org', 'greenharvest-logo.png'),
+                ('UnityServe Volunteers', 'Volunteer group.', 'hello@unityserve.org', 'unityserve-logo.png');
+            `);
+            console.log('Inserted organizations');
+        }
+
+        const catCheck = await db.query('SELECT COUNT(*) FROM category');
+        if (parseInt(catCheck.rows[0].count) === 0) {
+            await db.query(`
+                INSERT INTO category (name) VALUES
+                ('Environmental'),
+                ('Educational'),
+                ('Community Service'),
+                ('Health and Wellness');
+            `);
+            console.log('Inserted categories');
+        }
+
+        console.log('Database synced successfully');
+    } catch (error) {
+        console.error('Database sync failed:', error);
+    }
+};
+
+//
+
+
+
+
 // -------- ROUTES -------- //
 
 // Home page
@@ -72,9 +143,12 @@ app.get('/categories', async (req, res) => {
 });
 
 // -------- START SERVER -------- //
+//
 app.listen(PORT, async () => {
     try {
         await testConnection();
+        await syncDatabase(); // 👈 THIS IS THE KEY
+
         console.log(`Server is running at http://127.0.0.1:${PORT}`);
         console.log(`Environment: ${NODE_ENV}`);
     } catch (error) {
