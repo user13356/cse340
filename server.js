@@ -1,4 +1,7 @@
 // server.js
+
+import db from './src/models/db.js';
+
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -6,8 +9,9 @@ import path from 'path';
 // Import your database functions
 import { getAllOrganizations } from './src/models/organizations.js';
 import { getAllCategories } from './src/models/categories.js';
-import { getAllProjects } from './src/models/projects.js';
+import { getUpcomingProjects } from './src/models/projects.js';
 import { testConnection } from './src/models/db.js';
+import { showProjectsPage, showProjectDetailsPage } from './src/controllers/projects.js';
 
 // Environment and port
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
@@ -22,6 +26,34 @@ const app = express();
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
+
+//
+
+
+
+// setup
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'src/views'));
+
+// Middleware to log all incoming requests
+app.use((req, res, next) => {
+    if (NODE_ENV === 'development') {
+        console.log(`${req.method} ${req.url}`);
+    }
+    next();
+});
+
+// Middleware to make NODE_ENV available to all templates
+app.use((req, res, next) => {
+    res.locals.NODE_ENV = NODE_ENV;
+    next();
+});
+
+//
+
+
+
+//
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -115,11 +147,43 @@ app.get('/organizations', async (req, res) => {
     }
 });
 
+//
+app.get('/organization/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        const organizations = await getAllOrganizations();
+
+        const organization = organizations.find(
+            org => org.organization_id == id
+        );
+
+        if (!organization) {
+            return res.status(404).send('Organization not found');
+        }
+
+        res.render('organization', {
+            title: organization.name,
+            organization
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error loading organization');
+    }
+});
+
+
+
+
+
+//
+
 // Projects page
 
 app.get('/projects', async (req, res) => {
     try {
-        const projects = await getAllProjects();
+        const projects = await getUpcomingProjects();
         const title = 'Service Projects';
         res.render('projects', { title, projects });
     } catch (error) {
@@ -141,6 +205,18 @@ app.get('/categories', async (req, res) => {
         res.status(500).send('Error loading categories');
     }
 });
+
+//
+
+// Projects list
+app.get('/projects', showProjectsPage);
+
+// Project details
+app.get('/project/:id', showProjectDetailsPage);
+
+
+//
+
 
 // -------- START SERVER -------- //
 //

@@ -22,6 +22,39 @@ CREATE TABLE category (
     name VARCHAR(100) NOT NULL
 );
 
+
+INSERT INTO category (name)
+VALUES
+('Environmental'),
+('Educational'),
+('Community Service'),
+('Health and Wellness');
+
+CREATE TABLE project_category (
+    project_id INTEGER,
+    category_id INTEGER,
+
+    PRIMARY KEY (project_id, category_id),
+
+    FOREIGN KEY (project_id)
+        REFERENCES service_project(project_id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (category_id)
+        REFERENCES category(category_id)
+        ON DELETE CASCADE
+);
+
+INSERT INTO project_category (project_id, category_id)
+VALUES
+(1, 1),
+(2, 1),
+(3, 3),
+(4, 2),
+(5, 4);
+
+
+
 -- ========================================
 -- Junction Table (Many-to-Many)
 
@@ -73,4 +106,36 @@ SELECT p.title, o.name
         FROM public.project p
         JOIN public.organization o ON p.organization_id = o.organization_id;
 
-        
+
+
+CREATE TABLE service_project (
+    project_id SERIAL PRIMARY KEY,
+    organization_id INTEGER NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    location VARCHAR(255),
+    project_date DATE NOT NULL,
+
+    CONSTRAINT fk_organization
+        FOREIGN KEY (organization_id)
+        REFERENCES organization(organization_id)
+        ON DELETE CASCADE
+);
+
+
+INSERT INTO service_project (organization_id, name, description, location, project_date)
+VALUES
+(1, 'Tree Planting', 'Plant trees in park', 'Cape Town', '2026-05-01'),
+(1, 'Beach Cleanup', 'Clean the beach', 'Cape Town', '2026-05-10'),
+(1, 'Food Drive', 'Collect food donations', 'Cape Town', '2026-05-15'),
+
+(2, 'School Tutoring', 'Help students study', 'Johannesburg', '2026-05-02'),
+(2, 'Book Donation', 'Donate books', 'Johannesburg', '2026-05-12'),
+(2, 'Tech Workshop', 'Teach coding', 'Johannesburg', '2026-05-18'),
+
+(3, 'Health Camp', 'Free checkups', 'Durban', '2026-05-03'),
+(3, 'Yoga Day', 'Community yoga', 'Durban', '2026-05-14'),
+(3, 'Blood Drive', 'Donate blood', 'Durban', '2026-05-20');
+
+
+
