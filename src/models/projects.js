@@ -1,7 +1,7 @@
-import db from './db.js';
+import db from '../db.js';
 
-// Get upcoming projects
-export async function getUpcomingProjects(limit) {
+// Upcoming projects
+export const getUpcomingProjects = async (limit = 5) => {
     const query = `
         SELECT 
             sp.project_id,
@@ -21,10 +21,10 @@ export async function getUpcomingProjects(limit) {
 
     const result = await db.query(query, [limit]);
     return result.rows;
-}
+};
 
-// Get ONE project by ID
-export async function getProjectDetails(id) {
+// Single project
+export const getProjectDetails = async (id) => {
     const query = `
         SELECT 
             sp.project_id,
@@ -42,4 +42,23 @@ export async function getProjectDetails(id) {
 
     const result = await db.query(query, [id]);
     return result.rows[0];
-}
+};
+
+// 
+export const getProjectsByOrganizationId = async (organizationId) => {
+    const query = `
+        SELECT 
+            project_id,
+            organization_id,
+            name AS title,
+            description,
+            location,
+            project_date AS date
+        FROM service_project
+        WHERE organization_id = $1
+        ORDER BY project_date;
+    `;
+
+    const result = await db.query(query, [organizationId]);
+    return result.rows;
+};

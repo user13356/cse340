@@ -1,58 +1,24 @@
-import { Pool } from 'pg';
+import pkg from 'pg';
+const { Pool } = pkg;
 
 const pool = new Pool({
-    connectionString: process.env.DB_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
+  user: 'postgres',
+  host: 'localhost',
+  database: 'cse340',
+  password: 'password',   // 
+  port: 5432,
 });
 
-let db = null;
-
-if (process.env.NODE_ENV === 'development' && process.env.ENABLE_SQL_LOGGING === 'true') {
-    db = {
-        async query(text, params) {
-            const queryText = text ? text.replace(/\s+/g, ' ').trim() : 'NO QUERY';
-
-            try {
-                const start = Date.now();
-                const res = await pool.query(text, params);
-                const duration = Date.now() - start;
-
-                console.log('Executed query:', {
-                    text: queryText,
-                    duration: `${duration}ms`,
-                    rows: res.rowCount
-                });
-
-                return res;
-            } catch (error) {
-                console.error('Error in query:', {
-                    text: queryText,
-                    error: error.message
-                });
-
-                throw error;
-            }
-        },
-
-        async close() {
-            await pool.end();
-        }
-    };
-} else {
-    db = pool;
-}
-
-const testConnection = async () => {
-    try {
-        const result = await db.query('SELECT NOW() as current_time');
-        console.log('Database connection successful:', result.rows[0].current_time);
-        return true;
-    } catch (error) {
-        console.error('Database connection failed:', error.message);
-        throw error;
-    }
+// test connection function
+export const testConnection = async () => {
+  try {
+    await pool.query('SELECT 1');
+    console.log('Database connected');
+  } catch (err) {
+    console.error('Database connection failed:', err.message);
+  }
 };
 
-export { db as default, testConnection };
+export default {
+  query: (text, params) => pool.query(text, params),
+};
