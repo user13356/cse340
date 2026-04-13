@@ -138,4 +138,26 @@ VALUES
 (3, 'Blood Drive', 'Donate blood', 'Durban', '2026-05-20');
 
 
+ALTER TABLE organization ADD COLUMN website TEXT;
+
+
+
+UPDATE service_project
+SET location = CASE project_id
+    WHEN 1 THEN 'Cape Town'
+    WHEN 2 THEN 'Johannesburg'
+    WHEN 3 THEN 'Durban'
+END
+WHERE project_id IN (1,2,3);
+
+
+
+UPDATE service_project
+SET project_date = CASE project_id
+    WHEN 1 THEN '2026-02-10'::date
+    WHEN 2 THEN '2026-03-15'::date
+    WHEN 3 THEN '2026-04-20'::date
+END
+WHERE project_id IN (1,2,3);
+
 

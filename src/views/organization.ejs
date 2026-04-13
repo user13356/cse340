@@ -1,20 +1,71 @@
+<%- include('partials/header') %>
+
 <main>
-    <h1><%= organizationDetails.name %></h1>
-    <p><%= organizationDetails.description %></p>
-    <p><strong>Email:</strong> <%= organizationDetails.contact_email %></p>
+    <h1><%= title %></h1>
 
-    <h3>Projects</h3>
-    <ul>
-        <% projects.forEach(project => { %>
-            <li>
-                <a href="/project/<%= project.project_id %>">
-                    <%= project.name %>
+    <!-- Organization Info -->
+    <section class="organization-details">
+
+        <img 
+            src="/images/<%= organizationDetails.logo_filename || 'default.png' %>" 
+            alt="<%= organizationDetails.name %> logo"
+            width="120"
+            style="margin-bottom: 15px;"
+        >
+
+        <h2><%= organizationDetails.name %></h2>
+
+        <p><%= organizationDetails.description %></p>
+
+        <p>
+            <strong>Contact:</strong>
+            <%= organizationDetails.contact_email %>
+        </p>
+
+        <% if (organizationDetails.website) { %>
+            <p>
+                <strong>Website:</strong>
+                <a href="<%= organizationDetails.website.startsWith('http')
+                    ? organizationDetails.website
+                    : 'https://' + organizationDetails.website %>"
+                    target="_blank">
+                    <%= organizationDetails.website %>
                 </a>
-            </li>
-        <% }) %>
-    </ul>
+            </p>
+        <% } %>
 
-    <a href="/organizations">Back to All Organizations</a>
+        <!-- Edit link -->
+        <a href="/edit-organization/<%= organizationDetails.organization_id %>">
+            Edit Organization
+        </a>
+
+    </section>
+
+    <hr>
+
+    <!-- Related Projects -->
+    <section>
+        <h2>Projects</h2>
+
+        <% if (projects && projects.length > 0) { %>
+
+            <% projects.forEach(project => { %>
+                <div class="project-item" style="margin-bottom: 15px;">
+                    
+                    <a href="/project/<%= project.project_id %>">
+                        <strong><%= project.title %></strong>
+                    </a>
+
+                    <p><%= project.description %></p>
+
+                </div>
+            <% }) %>
+
+        <% } else { %>
+            <p>No projects found for this organization.</p>
+        <% } %>
+
+    </section>
 </main>
 
 <%- include('partials/footer') %>

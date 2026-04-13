@@ -1,21 +1,22 @@
 import db from '../db.js';
 
-// Upcoming projects
+
+// =======================================================
+// UPCOMING PROJECTS
+// =======================================================
 export const getUpcomingProjects = async (limit = 5) => {
     const query = `
         SELECT 
-            sp.project_id,
-            sp.name AS title,
-            sp.description,
-            sp.location,
-            sp.project_date AS date,
-            sp.organization_id,
+            p.project_id,
+            p.title,
+            p.description,
+            p.location,
+            p.project_date,
             o.name AS organization_name
-        FROM service_project sp
+        FROM project p
         JOIN organization o 
-            ON sp.organization_id = o.organization_id
-        WHERE sp.project_date >= CURRENT_DATE
-        ORDER BY sp.project_date ASC
+            ON p.organization_id = o.organization_id
+        ORDER BY p.project_date ASC
         LIMIT $1;
     `;
 
@@ -23,42 +24,126 @@ export const getUpcomingProjects = async (limit = 5) => {
     return result.rows;
 };
 
-// Single project
+
+// =======================================================
+// SINGLE PROJECT
+// =======================================================
 export const getProjectDetails = async (id) => {
     const query = `
         SELECT 
-            sp.project_id,
-            sp.name AS title,
-            sp.description,
-            sp.location,
-            sp.project_date AS date,
-            sp.organization_id,
+            p.project_id,
+            p.title,
+            p.description,
+            p.location,
+            p.project_date,
+            p.organization_id,
             o.name AS organization_name
-        FROM service_project sp
+        FROM project p
         JOIN organization o 
-            ON sp.organization_id = o.organization_id
-        WHERE sp.project_id = $1;
+            ON p.organization_id = o.organization_id
+        WHERE p.project_id = $1;
     `;
 
     const result = await db.query(query, [id]);
     return result.rows[0];
 };
 
-// 
-export const getProjectsByOrganizationId = async (organizationId) => {
+
+// =======================================================
+// PROJECTS BY ORGANIZATION
+// =======================================================
+export const getProjectsByOrganizationId = async (id) => {
     const query = `
         SELECT 
             project_id,
-            organization_id,
-            name AS title,
+            title,
             description,
             location,
-            project_date AS date
-        FROM service_project
+            project_date
+        FROM project
         WHERE organization_id = $1
-        ORDER BY project_date;
+        ORDER BY project_date ASC;
     `;
 
-    const result = await db.query(query, [organizationId]);
+    const result = await db.query(query, [id]);
     return result.rows;
+};
+
+
+// =======================================================
+// CREATE PROJECT
+// =======================================================
+export const createProject = async (
+    title,
+    description,
+    location,
+    date,
+    organizationId
+) => {
+    const query = `
+        INSERT INTO project
+        (title, description, location, project_date, organization_id)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING project_id;
+    `;
+
+    const result = await db.query(query, [
+        title,
+        description,
+        location,
+        date,
+        organizationId
+    ]);
+
+    return result.rows[0].project_id;
+};
+
+//
+
+
+
+
+
+
+//
+
+
+// =======================================================
+// UPDATE PROJECT
+// =======================================================
+export const updateProject = async (
+    projectId,
+    title,
+    description,
+    location,
+    date,
+    organizationId
+) => {
+    const query = `
+        UPDATE project
+        SET title = $1,
+            description = $2,
+            location = $3,
+            project_date = $4,
+            organization_id = $5
+        WHERE project_id = $6
+        RETURNING project_id;
+    `;
+
+    const values = [
+        title,
+        description,
+        location,
+        date,
+        organizationId,
+        projectId
+    ];
+
+    const result = await db.query(query, values);
+
+    if (result.rows.length === 0) {
+        throw new Error('Project not found');
+    }
+
+    return result.rows[0].project_id;
 };

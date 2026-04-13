@@ -1,0 +1,92 @@
+<%- include('partials/header') %>
+
+<main>
+    <h1>Edit Organization</h1>
+
+    <h3>
+        Update the details of this partner organization.
+    </h3>
+
+    <!-- Flash Messages -->
+    <% if (error && error.length > 0) { %>
+        <% error.forEach(e => { %>
+            <p style="color:red;"><%= e %></p>
+        <% }) %>
+    <% } %>
+
+    <% if (success && success.length > 0) { %>
+        <% success.forEach(s => { %>
+            <p style="color:green;"><%= s %></p>
+        <% }) %>
+    <% } %>
+
+    <section>
+        <h2>Organization Details</h2>
+
+        <form action="/edit-organization/<%= organizationDetails.organization_id %>" method="POST">
+
+            <!-- Name -->
+            <div>
+                <label for="name">Organization Name</label><br>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value="<%= (formData && formData.name) || organizationDetails.name %>"
+                    required
+                >
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label for="description">Description</label><br>
+                <textarea
+                    id="description"
+                    name="description"
+                    rows="4"
+                    required
+                ><%= (formData && formData.description) || organizationDetails.description %></textarea>
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label for="contact_email">Contact Email</label><br>
+                <input
+                    type="email"
+                    id="contact_email"
+                    name="contact_email"
+                    value="<%= (formData && formData.contact_email) || organizationDetails.contact_email %>"
+                    required
+                >
+            </div>
+
+            <!-- Website -->
+            <div>
+                <label for="website">Website</label><br>
+                <input
+                    type="url"
+                    id="website"
+                    name="website"
+                    value="<%= (formData && formData.website) || organizationDetails.website %>"
+                >
+            </div>
+
+            <!-- Logo -->
+            <div>
+                <label for="logo_filename">Logo Filename</label><br>
+                <input
+                    type="text"
+                    id="logo_filename"
+                    name="logo_filename"
+                    value="<%= (formData && formData.logo_filename) || organizationDetails.logo_filename %>"
+                >
+            </div>
+
+            <br>
+
+            <button type="submit">Update Organization</button>
+        </form>
+    </section>
+</main>
+
+<%- include('partials/footer') %>

@@ -1,10 +1,27 @@
 import express from 'express';
+import session from 'express-session';
+import flash from 'connect-flash';
+
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 import router from './src/controllers/routes.js';
 
 const app = express();
+
+// body parsing 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// session before flash
+app.use(session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: true
+}));
+
+// flash messages
+app.use(flash());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,6 +38,25 @@ app.use((req, res, next) => {
     next();
 });
 
+//
+
+
+
+
+//
+
+//
+
+app.use(session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: true
+}));
+
+app.use(flash());
+
+
+//
 
 //  ONLY THIS ROUTER
 app.use('/', router);

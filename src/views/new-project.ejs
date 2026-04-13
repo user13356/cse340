@@ -1,0 +1,76 @@
+<%- include('partials/header') %>
+
+<main>
+    <h1>Create Project</h1>
+
+    <!-- Flash Messages -->
+    <% if (error && error.length > 0) { %>
+        <% error.forEach(e => { %>
+            <p style="color:red;"><%= e %></p>
+        <% }) %>
+    <% } %>
+
+    <% if (success && success.length > 0) { %>
+        <% success.forEach(s => { %>
+            <p style="color:green;"><%= s %></p>
+        <% }) %>
+    <% } %>
+
+    <form action="/projects" method="POST">
+
+        <div>
+            <label>Title</label>
+            <input
+                type="text"
+                name="title"
+                value="<%= (formData && formData.title) || '' %>"
+                required
+            />
+        </div>
+
+        <div>
+            <label>Description</label>
+            <textarea name="description" required><%= (formData && formData.description) || '' %></textarea>
+        </div>
+
+        <div>
+            <label>Location</label>
+            <input
+                type="text"
+                name="location"
+                value="<%= (formData && formData.location) || '' %>"
+                required
+            />
+        </div>
+
+        <div>
+            <label>Date</label>
+            <input
+                type="date"
+                name="date"
+                value="<%= (formData && formData.date) || '' %>"
+                required
+            />
+        </div>
+
+        <div>
+            <label>Organization</label>
+            <select name="organizationId" required>
+                <option value="">-- Select Organization --</option>
+
+                <% organizations.forEach(org => { %>
+                    <option
+                        value="<%= org.organization_id %>"
+                        <%= (formData && Number(formData.organizationId) === org.organization_id) ? 'selected' : '' %>
+                    >
+                        <%= org.name %>
+                    </option>
+                <% }) %>
+            </select>
+        </div>
+
+        <button type="submit">Create Project</button>
+    </form>
+</main>
+
+<%- include('partials/footer') %>

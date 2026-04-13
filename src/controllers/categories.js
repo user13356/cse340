@@ -4,8 +4,11 @@ import {
     getProjectsByCategoryId
 } from '../models/categories.js';
 
-// ALL categories page
-export const showCategoriesPage = async (req, res) => {
+
+// =======================================================
+// ALL CATEGORIES PAGE
+// =======================================================
+export const showCategoriesPage = async (req, res, next) => {
     try {
         const categories = await getAllCategories();
 
@@ -15,22 +18,25 @@ export const showCategoriesPage = async (req, res) => {
         });
 
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Error loading categories');
+        next(error);
     }
 };
 
+
+// =======================================================
 // CATEGORY DETAILS PAGE
-export const showCategoryDetailsPage = async (req, res) => {
+// =======================================================
+export const showCategoryDetailsPage = async (req, res, next) => {
     try {
-        const id = req.params.id;
+        const id = Number(req.params.id);
 
         const category = await getCategoryById(id);
-        const projects = await getProjectsByCategoryId(id);
 
         if (!category) {
             return res.status(404).send('Category not found');
         }
+
+        const projects = await getProjectsByCategoryId(id) || [];
 
         res.render('category', {
             title: category.name,
@@ -39,7 +45,6 @@ export const showCategoryDetailsPage = async (req, res) => {
         });
 
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Error loading category');
+        next(error);
     }
 };

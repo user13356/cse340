@@ -9,7 +9,6 @@
 
     <img class="main-logo" src="/images/image_org.webp" alt="CSE 340 Backend Organizations">
 
-    <!-- Section for database organizations -->
     <section>
         <h2>Our Partner Organizations</h2>
 
@@ -19,7 +18,7 @@
 
                     <!-- Logo -->
                     <img 
-                        src="/images/<%= organization.logo_filename %>" 
+                        src="/images/<%= organization.logo_filename || 'default.png' %>" 
                         alt="<%= organization.name %> logo"
                         width="100"
                         style="display:block; margin-bottom:10px;"
@@ -33,6 +32,11 @@
 
                     <!-- Email -->
                     <p><%= organization.contact_email %></p>
+
+                    <!-- Link to details page -->
+                    <a href="/organization/<%= organization.organization_id %>">
+                        View Details
+                    </a>
 
                 </li>
             <% }); %>
