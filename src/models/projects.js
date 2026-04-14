@@ -147,3 +147,55 @@ export const updateProject = async (
 
     return result.rows[0].project_id;
 };
+
+//
+
+export const getProjectById = async (id) => {
+    const result = await db.query(`
+        SELECT *
+        FROM project
+        WHERE project_id = $1;
+    `, [id]);
+
+    return result.rows[0];
+};
+
+
+
+//
+
+export const getAllProjects = async () => {
+    const result = await db.query(`
+        SELECT 
+            p.project_id,
+            p.title,
+            p.description,
+            p.location,
+            p.project_date,
+            o.name AS organization_name
+        FROM project p
+        JOIN organization o
+            ON p.organization_id = o.organization_id
+        ORDER BY p.project_date DESC;
+    `);
+
+    return result.rows;
+};
+
+
+
+
+//
+
+export const assignCategoryToProject = async (projectId, categoryId) => {
+    const query = `
+        INSERT INTO project_category (project_id, category_id)
+        VALUES ($1, $2)
+        ON CONFLICT DO NOTHING;
+    `;
+    await pool.query(query, [projectId, categoryId]);
+};
+
+
+
+//

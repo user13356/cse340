@@ -1,7 +1,7 @@
+
 import express from 'express';
 import session from 'express-session';
 import flash from 'connect-flash';
-
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -9,66 +9,63 @@ import router from './src/controllers/routes.js';
 
 const app = express();
 
-// body parsing 
+// =====================
+// BODY PARSING (KEEP THIS FIRST)
+// =====================
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// session before flash
+// =====================
+// SESSION (ONLY ONCE)
+// =====================
 app.use(session({
     secret: 'secret',
     resave: false,
     saveUninitialized: true
 }));
 
-// flash messages
+// =====================
+// FLASH (ONLY ONCE)
+// =====================
 app.use(flash());
 
+// =====================
+// VIEWS
+// =====================
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
 
+// =====================
+// STATIC FILES
+// =====================
 app.use(express.static(path.join(__dirname, 'public')));
 
-//
-
+// =====================
+// GLOBAL VARS
+// =====================
 app.use((req, res, next) => {
     res.locals.NODE_ENV = process.env.NODE_ENV || 'development';
     next();
 });
 
-//
-
-
-
-
-//
-
-//
-
-app.use(session({
-    secret: 'secret',
-    resave: false,
-    saveUninitialized: true
-}));
-
-app.use(flash());
-
-
-//
-
-//  ONLY THIS ROUTER
+// =====================
+// ROUTES
+// =====================
 app.use('/', router);
 
-// home test
+// =====================
+// HOME
+// =====================
 app.get('/', (req, res) => {
     res.render('home', { title: 'Home' });
 });
 
-
-
-// 404 fallback
+// =====================
+// 404
+// =====================
 app.use((req, res) => {
     res.status(404).send('Page Not Found');
 });

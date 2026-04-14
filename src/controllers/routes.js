@@ -14,15 +14,20 @@ import {
     showProjectDetailsPage,
     showNewProjectForm,
     processNewProjectForm,
-    showEditProjectForm,
-    processEditProjectForm
+    getEditProject,
+    postEditProject
 } from './projects.js';
 
 
 import {
     showCategoriesPage,
-    showCategoryDetailsPage
+    showCategoryDetailsPage,
+    getAddCategory,
+    postAddCategory,
+    getEditCategory,
+    postEditCategory
 } from './categories.js';
+
 
 
 
@@ -57,17 +62,29 @@ router.post('/projects', processNewProjectForm);
 router.get('/project/:id', showProjectDetailsPage);
 
 // SHOW EDIT FORM
-router.get('/edit-project/:id', showEditProjectForm);
+router.get('/edit-project/:id', getEditProject);
 
 // PROCESS EDIT FORM
-router.post('/edit-project/:id', processEditProjectForm);
+router.post('/edit-project/:id', postEditProject);
 
 
 // List all categories
 router.get('/categories', showCategoriesPage);
 
+
 // Category details (projects under category)
-router.get('/category/:id', showCategoryDetailsPage);
+
+router.get('/categories/add', getAddCategory);
+router.post('/categories/add', postAddCategory);
+
+router.get('/categories/:id', showCategoryDetailsPage);
+
+router.get('/categories/edit/:id', getEditCategory);
+router.post('/categories/edit/:id', postEditCategory);
+
+//
+
+
 
 
 //

@@ -1,17 +1,21 @@
 import db from '../db.js';
 
+// =======================================================
 // GET ALL CATEGORIES
+// =======================================================
 export const getAllCategories = async () => {
     const result = await db.query(`
         SELECT category_id, name
         FROM category
         ORDER BY name;
     `);
-
     return result.rows;
 };
 
-// GET ONE CATEGORY
+
+// =======================================================
+// GET CATEGORY BY ID
+// =======================================================
 export const getCategoryById = async (id) => {
     const result = await db.query(`
         SELECT category_id, name
@@ -22,7 +26,10 @@ export const getCategoryById = async (id) => {
     return result.rows[0];
 };
 
+
+// =======================================================
 // GET PROJECTS BY CATEGORY
+// =======================================================
 export const getProjectsByCategoryId = async (id) => {
     const result = await db.query(`
         SELECT 
@@ -41,24 +48,33 @@ export const getProjectsByCategoryId = async (id) => {
     return result.rows;
 };
 
-// ASSIGN CATEGORY TO PROJECT
-export const assignCategoryToProject = async (categoryId, projectId) => {
-    await db.query(`
-        INSERT INTO project_category (category_id, project_id)
-        VALUES ($1, $2);
-    `, [categoryId, projectId]);
+
+// =======================================================
+// CREATE CATEGORY
+// =======================================================
+export const createCategory = async (name) => {
+    const result = await db.query(`
+        INSERT INTO category (name)
+        VALUES ($1)
+        RETURNING *;
+    `, [name]);
+
+    return result.rows[0];
 };
 
-// UPDATE CATEGORY ASSIGNMENTS
-export const updateCategoryAssignments = async (projectId, categoryIds = []) => {
-    await db.query(
-        `DELETE FROM project_category WHERE project_id = $1`,
-        [projectId]
-    );
 
-    if (!Array.isArray(categoryIds)) return;
+//
 
-    for (const id of categoryIds) {
-        await assignCategoryToProject(id, projectId);
-    }
+export const updateCategory = async (id, name) => {
+    const result = await db.query(`
+        UPDATE category
+        SET name = $1
+        WHERE category_id = $2
+        RETURNING *;
+    `, [name, id]);
+
+    return result.rows[0];
 };
+
+
+//

@@ -1,36 +1,34 @@
 <%- include('partials/header') %>
 
-<main>
+<main class="container">
+
     <h1>Edit Project</h1>
 
-    <!-- Flash Messages -->
-    <% if (error && error.length > 0) { %>
-        <% error.forEach(e => { %>
-            <p style="color:red;"><%= e %></p>
-        <% }) %>
+    <!-- ERROR -->
+    <% if (error) { %>
+        <p style="color:red;"><%= error %></p>
     <% } %>
 
-    <% if (success && success.length > 0) { %>
-        <% success.forEach(s => { %>
-            <p style="color:green;"><%= s %></p>
-        <% }) %>
+    <!-- SUCCESS -->
+    <% if (success) { %>
+        <p style="color:green;"><%= success %></p>
     <% } %>
 
-    <form action="/edit-project/<%= projectDetails.project_id %>" method="POST">
+    <form action="/edit-project/<%= project.project_id %>" method="POST">
 
         <div>
             <label>Title</label>
             <input
                 type="text"
                 name="title"
-                value="<%= (formData && formData.title) || projectDetails.title %>"
+                value="<%= project.title %>"
                 required
             />
         </div>
 
         <div>
             <label>Description</label>
-            <textarea name="description" required><%= (formData && formData.description) || projectDetails.description %></textarea>
+            <textarea name="description" required><%= project.description %></textarea>
         </div>
 
         <div>
@@ -38,7 +36,7 @@
             <input
                 type="text"
                 name="location"
-                value="<%= (formData && formData.location) || projectDetails.location %>"
+                value="<%= project.location %>"
                 required
             />
         </div>
@@ -47,8 +45,8 @@
             <label>Date</label>
             <input
                 type="date"
-                name="date"
-                value="<%= projectDetails.date ? new Date(projectDetails.date).toISOString().split('T')[0] : '' %>"
+                name="project_date"
+                value="<%= project.project_date ? new Date(project.project_date).toISOString().split('T')[0] : '' %>"
                 required
             />
         </div>
@@ -59,7 +57,7 @@
                 <% organizations.forEach(org => { %>
                     <option
                         value="<%= org.organization_id %>"
-                        <%= Number((formData && formData.organizationId) || projectDetails.organization_id) === org.organization_id ? 'selected' : '' %>
+                        <%= Number(project.organization_id) === org.organization_id ? 'selected' : '' %>
                     >
                         <%= org.name %>
                     </option>
@@ -68,7 +66,9 @@
         </div>
 
         <button type="submit">Update Project</button>
+
     </form>
+
 </main>
 
 <%- include('partials/footer') %>

@@ -1,21 +1,21 @@
 import {
     getProjectDetails,
-    getUpcomingProjects,
     updateProject,
-    createProject
+    createProject,
+    getProjectById,
+    getAllProjects
 } from '../models/projects.js';
 
 import { getAllOrganizations } from '../models/organizations.js';
 
 const NUMBER_OF_UPCOMING_PROJECTS = 5;
 
-
 // =======================================================
 // LIST PROJECTS
 // =======================================================
 export async function showProjectsPage(req, res) {
     try {
-        const projects = await getUpcomingProjects(NUMBER_OF_UPCOMING_PROJECTS);
+        const projects = await getAllProjects();
 
         res.render('projects', {
             title: 'Upcoming Service Projects',
@@ -27,7 +27,6 @@ export async function showProjectsPage(req, res) {
         res.status(500).send('Error loading projects');
     }
 }
-
 
 // =======================================================
 // PROJECT DETAILS
@@ -53,118 +52,143 @@ export async function showProjectDetailsPage(req, res) {
     }
 }
 
-
 // =======================================================
-// SHOW EDIT FORM
-// =======================================================
-export const showEditProjectForm = async (req, res) => {
-    try {
-        const projectId = req.params.id;
-
-        const projectDetails = await getProjectDetails(projectId);
-        const organizations = await getAllOrganizations();
-
-        if (!projectDetails) {
-            return res.status(404).send('Project not found');
-        }
-
-        res.render('edit-project', {
-            title: 'Edit Project',
-            projectDetails,
-            organizations,
-            formData: {},
-            error: req.flash('error'),
-            success: req.flash('success')
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
-    }
-};
-
-
-// =======================================================
-// PROCESS EDIT FORM
-// =======================================================
-export const processEditProjectForm = async (req, res) => {
-    const projectId = req.params.id;
-
-    const { title, description, location, date, organizationId } = req.body;
-
-    try {
-        await updateProject(
-            projectId,
-            title,
-            description,
-            location,
-            date,
-            organizationId
-        );
-
-        req.flash('success', 'Project updated successfully!');
-        res.redirect(`/project/${projectId}`);
-
-    } catch (error) {
-        console.error(error);
-
-        req.flash('error', 'Error updating project');
-        res.redirect(`/edit-project/${projectId}`);
-    }
-};
-
-
-// =======================================================
-// SHOW CREATE FORM
+// SHOW NEW PROJECT FORM (FIXED - NO BLANK PAGE)
 // =======================================================
 export const showNewProjectForm = async (req, res) => {
     try {
         const organizations = await getAllOrganizations();
 
-        res.render('new-project', {
-            title: 'Create Project',
+        return res.render('new-project', {
+            title: 'Create Project',   // IMPORTANT (prevents header crash)
             organizations,
             formData: {},
-            error: req.flash('error'),
-            success: req.flash('success')
+            error: null
         });
 
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
+        console.error("NEW PROJECT FORM ERROR:", error);
+
+        return res.status(500).send("Server error loading form");
     }
 };
 
-
 // =======================================================
-// PROCESS CREATE FORM
+// PROCESS NEW PROJECT FORM
 // =======================================================
 export const processNewProjectForm = async (req, res) => {
-    const { title, description, location, date, organizationId } = req.body;
-
     try {
+        const {
+            title,
+            description,
+            location,
+            project_date,
+            organizationId
+        } = req.body;
+
+        if (!title || !description || !project_date || !organizationId) {
+            const organizations = await getAllOrganizations();
+
+            return res.status(400).render('new-project', {
+                title: 'Create Project',
+                organizations,
+                formData: req.body,
+                error: 'All required fields must be filled'
+            });
+        }
+
         await createProject(
             title,
             description,
             location,
-            date,
+            project_date,
             organizationId
         );
 
-        req.flash('success', 'Project created successfully!');
-        res.redirect('/projects');
+        return res.redirect('/projects');
 
     } catch (error) {
         console.error(error);
 
         const organizations = await getAllOrganizations();
 
-        res.render('new-project', {
+        return res.status(500).render('new-project', {
             title: 'Create Project',
             organizations,
             formData: req.body,
-            error: ['Error creating project'],
-            success: []
+            error: 'Error creating project'
         });
+    }
+};
+
+// =======================================================
+// EDIT PROJECT FORM
+// =======================================================
+export const getEditProject = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const project = await getProjectById(id);
+
+        if (!project) {
+            return res.status(404).render('404', {
+                title: 'Not Found'
+            });
+        }
+
+        const formattedDate = project.project_date
+            ? new Date(project.project_date).toISOString().split('T')[0]
+            : '';
+
+        const organizations = await getAllOrganizations();
+
+        return res.render('edit-project', {
+            title: 'Edit Project',
+            project: {
+                ...project,
+                project_date: formattedDate
+            },
+            organizations,
+            error: null,
+            success: null   // 
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+// =======================================================
+// UPDATE PROJECT
+// =======================================================
+export const postEditProject = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const {
+            title,
+            description,
+            location,
+            project_date,
+            organizationId
+        } = req.body;
+
+        if (!title || !description || !project_date || !organizationId) {
+            return res.status(400).send("Missing required fields");
+        }
+
+        await updateProject(
+            id,
+            title,
+            description,
+            location,
+            project_date,
+            organizationId
+        );
+
+        return res.redirect(`/project/${id}`);
+
+    } catch (err) {
+        next(err);
     }
 };
