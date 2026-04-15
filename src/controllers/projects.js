@@ -8,6 +8,14 @@ import {
 
 import { getAllOrganizations } from '../models/organizations.js';
 
+//
+
+import { getAllCategories } from '../models/categories.js';
+import { assignCategoryToProject } from '../models/projects.js';
+
+
+//
+
 const NUMBER_OF_UPCOMING_PROJECTS = 5;
 
 // =======================================================
@@ -86,14 +94,32 @@ export const processNewProjectForm = async (req, res) => {
             organizationId
         } = req.body;
 
-        if (!title || !description || !project_date || !organizationId) {
+        let error = null;
+
+        if (!title || title.trim().length < 3) {
+            error = "Title must be at least 3 characters";
+        }
+        else if (!description || description.trim().length < 3) {
+            error = "Description must be at least 3 characters";
+        }
+        else if (!location || location.trim().length < 3) {
+            error = "Location must be at least 3 characters";
+        }
+        else if (!project_date) {
+            error = "Project date is required";
+        }
+        else if (!organizationId) {
+            error = "Organization is required";
+        }
+
+        if (error) {
             const organizations = await getAllOrganizations();
 
             return res.status(400).render('new-project', {
                 title: 'Create Project',
                 organizations,
                 formData: req.body,
-                error: 'All required fields must be filled'
+                error
             });
         }
 
@@ -124,33 +150,21 @@ export const processNewProjectForm = async (req, res) => {
 // =======================================================
 // EDIT PROJECT FORM
 // =======================================================
+
 export const getEditProject = async (req, res, next) => {
     try {
         const { id } = req.params;
 
         const project = await getProjectById(id);
-
-        if (!project) {
-            return res.status(404).render('404', {
-                title: 'Not Found'
-            });
-        }
-
-        const formattedDate = project.project_date
-            ? new Date(project.project_date).toISOString().split('T')[0]
-            : '';
-
         const organizations = await getAllOrganizations();
 
         return res.render('edit-project', {
             title: 'Edit Project',
-            project: {
-                ...project,
-                project_date: formattedDate
-            },
+            project,
             organizations,
-            error: null,
-            success: null   // 
+            errors: [],       
+            formData: {},     
+            success: null     
         });
 
     } catch (err) {
@@ -158,9 +172,7 @@ export const getEditProject = async (req, res, next) => {
     }
 };
 
-// =======================================================
-// UPDATE PROJECT
-// =======================================================
+
 export const postEditProject = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -173,8 +185,40 @@ export const postEditProject = async (req, res, next) => {
             organizationId
         } = req.body;
 
-        if (!title || !description || !project_date || !organizationId) {
-            return res.status(400).send("Missing required fields");
+        const errors = [];
+
+        if (!title || title.trim().length < 3) {
+            errors.push("Title must be at least 3 characters");
+        }
+
+        if (!description || description.trim().length < 3) {
+            errors.push("Description must be at least 3 characters");
+        }
+
+        if (!location || location.trim().length < 3) {
+            errors.push("Location must be at least 3 characters");
+        }
+
+        if (!project_date) {
+            errors.push("Project date is required");
+        }
+
+        if (!organizationId) {
+            errors.push("Organization is required");
+        }
+
+        if (errors.length > 0) {
+            const project = await getProjectById(id);
+            const organizations = await getAllOrganizations();
+
+            return res.status(400).render('edit-project', {
+            title: 'Edit Project',
+            project,
+            organizations,
+            errors,
+            formData: req.body,
+            success: null   
+        });
         }
 
         await updateProject(
@@ -190,5 +234,56 @@ export const postEditProject = async (req, res, next) => {
 
     } catch (err) {
         next(err);
+    }
+};
+
+// =======================================================
+// ASSIGN CATEGORY
+// =======================================================
+
+
+
+
+
+
+
+export const getAssignCategoryForm = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const categories = await getAllCategories();
+
+        res.render('assign-category', {
+            title: 'Assign Category',
+            projectId: id,
+            categories
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server error");
+    }
+};
+
+
+
+export const postAssignCategory = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { categoryId } = req.body;
+
+        if (!categoryId) {
+            return res.status(400).send("Category is required");
+        }
+
+        // CATEGORY TO DATABASE 
+        await assignCategoryToProject(id, categoryId);
+
+        // BACK TO PROJECT PAGE 
+        return res.redirect(`/project/${id}`);
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send("Server error");
     }
 };

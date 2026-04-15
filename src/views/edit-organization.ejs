@@ -3,27 +3,19 @@
 <main>
     <h1>Edit Organization</h1>
 
-    <h3>
-        Update the details of this partner organization.
-    </h3>
+    <h3>Update the details of this partner organization.</h3>
 
-    <!-- Flash Messages -->
-    <% if (error && error.length > 0) { %>
-        <% error.forEach(e => { %>
+    <!-- ERROR MESSAGES -->
+    <% if (errors && errors.length > 0) { %>
+        <% errors.forEach(function(e) { %>
             <p style="color:red;"><%= e %></p>
-        <% }) %>
-    <% } %>
-
-    <% if (success && success.length > 0) { %>
-        <% success.forEach(s => { %>
-            <p style="color:green;"><%= s %></p>
         <% }) %>
     <% } %>
 
     <section>
         <h2>Organization Details</h2>
 
-        <form action="/edit-organization/<%= organizationDetails.organization_id %>" method="POST">
+        <form action="/edit-organization/<%= organization.organization_id %>" method="POST">
 
             <!-- Name -->
             <div>
@@ -32,7 +24,7 @@
                     type="text"
                     id="name"
                     name="name"
-                    value="<%= (formData && formData.name) || organizationDetails.name %>"
+                    value="<%= (formData && formData.name) || organization.name %>"
                     required
                 >
             </div>
@@ -45,7 +37,7 @@
                     name="description"
                     rows="4"
                     required
-                ><%= (formData && formData.description) || organizationDetails.description %></textarea>
+                ><%= (formData && formData.description) || organization.description %></textarea>
             </div>
 
             <!-- Email -->
@@ -55,7 +47,7 @@
                     type="email"
                     id="contact_email"
                     name="contact_email"
-                    value="<%= (formData && formData.contact_email) || organizationDetails.contact_email %>"
+                    value="<%= (formData && formData.contact_email) || organization.contact_email %>"
                     required
                 >
             </div>
@@ -67,7 +59,7 @@
                     type="url"
                     id="website"
                     name="website"
-                    value="<%= (formData && formData.website) || organizationDetails.website %>"
+                    value="<%= (formData && formData.website) || organization.website %>"
                 >
             </div>
 
@@ -78,7 +70,7 @@
                     type="text"
                     id="logo_filename"
                     name="logo_filename"
-                    value="<%= (formData && formData.logo_filename) || organizationDetails.logo_filename %>"
+                    value="<%= (formData && formData.logo_filename) || organization.logo_filename %>"
                 >
             </div>
 

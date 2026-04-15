@@ -5,8 +5,10 @@
     <h1>Edit Project</h1>
 
     <!-- ERROR -->
-    <% if (error) { %>
-        <p style="color:red;"><%= error %></p>
+    <% if (errors && errors.length > 0) { %>
+        <% errors.forEach(function(e) { %>
+            <p style="color:red;"><%= e %></p>
+        <% }) %>
     <% } %>
 
     <!-- SUCCESS -->

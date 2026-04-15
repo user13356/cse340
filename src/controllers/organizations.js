@@ -1,4 +1,5 @@
 import {
+    getOrganizationById,
     getAllOrganizations,
     getOrganizationDetails,
     updateOrganization,
@@ -34,13 +35,18 @@ export const showOrganizationsPage = async (req, res) => {
 // SHOW NEW ORGANIZATION FORM
 // /organizations/new
 // =======================================================
-export const showNewOrganizationForm = (req, res) => {
-    res.render('new-organization', {
-        title: 'New Organization',
-        formData: {},
-        error: req.flash('error'),
-        success: req.flash('success')
-    });
+export const showNewOrganizationForm = async (req, res) => {
+    try {
+        res.render('new-organization', {
+            title: 'New Organization',
+            formData: {},   
+            errors: []      
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Server error");
+    }
 };
 
 
@@ -48,14 +54,31 @@ export const showNewOrganizationForm = (req, res) => {
 // PROCESS NEW ORGANIZATION
 // POST /organizations
 // =======================================================
+
 export const processNewOrganizationForm = async (req, res) => {
     const { name, description, contact_email, website, logo_filename } = req.body;
 
     try {
-        // VALIDATION
-        if (!name || !description || !contact_email) {
-            req.flash('error', 'Name, description, and email are required');
-            return res.redirect('/organizations/new');
+        const errors = [];
+
+        if (!name || name.trim().length < 3) {
+            errors.push("Name must be at least 3 characters");
+        }
+
+        if (!description || description.trim().length < 3) {
+            errors.push("Description must be at least 3 characters");
+        }
+
+        if (!contact_email) {
+            errors.push("Email is required");
+        }
+
+        if (errors.length > 0) {
+            return res.status(400).render('new-organization', {
+                title: 'New Organization',
+                formData: req.body,
+                errors   // REQUIRED
+            });
         }
 
         await createOrganization(
@@ -66,17 +89,15 @@ export const processNewOrganizationForm = async (req, res) => {
             logo_filename
         );
 
-        req.flash('success', 'Organization created successfully!');
-        res.redirect('/organizations');
+        return res.redirect('/organizations');
 
     } catch (error) {
         console.error(error);
 
-        res.render('new-organization', {
+        return res.status(500).render('new-organization', {
             title: 'New Organization',
             formData: req.body,
-            error: ['Error creating organization'],
-            success: []
+            errors: ["Error creating organization"]
         });
     }
 };
@@ -118,23 +139,18 @@ export const showEditOrganizationForm = async (req, res) => {
     try {
         const id = req.params.id;
 
-        const organizationDetails = await getOrganizationDetails(id);
+        const organization = await getOrganizationById(id);
 
-        if (!organizationDetails) {
-            return res.status(404).send('Organization not found');
-        }
-
-        res.render('edit-organization', {
+        return res.render('edit-organization', {
             title: 'Edit Organization',
-            organizationDetails,
-            formData: organizationDetails,
-            error: req.flash('error'),
-            success: req.flash('success')
+            organization,
+            formData: {},   // REQUIRED
+            errors: []      //  ERROR
         });
 
     } catch (error) {
         console.error(error);
-        res.status(500).send('Server error');
+        res.status(500).send("Server error");
     }
 };
 
@@ -143,12 +159,41 @@ export const showEditOrganizationForm = async (req, res) => {
 // PROCESS EDIT FORM
 // POST /edit-organization/:id
 // =======================================================
+
 export const processEditOrganizationForm = async (req, res) => {
     const id = req.params.id;
 
     const { name, description, contact_email, website, logo_filename } = req.body;
 
     try {
+        const errors = [];
+
+        // VALIDATION
+        if (!name || name.trim().length < 3) {
+            errors.push("Name must be at least 3 characters");
+        }
+
+        if (!description || description.trim().length < 3) {
+            errors.push("Description must be at least 3 characters");
+        }
+
+        if (!contact_email) {
+            errors.push("Email is required");
+        }
+
+        // IF ERRORS → RE-RENDER FORM
+        if (errors.length > 0) {
+            const organization = await getOrganizationById(id);
+
+            return res.status(400).render('edit-organization', {
+                title: 'Edit Organization',
+                organization,
+                formData: req.body,   // 🔥 THIS FIXES YOUR CRASH
+                errors
+            });
+        }
+
+        // UPDATE
         await updateOrganization(
             id,
             name,
@@ -158,13 +203,11 @@ export const processEditOrganizationForm = async (req, res) => {
             logo_filename
         );
 
-        req.flash('success', 'Organization updated successfully!');
-        res.redirect(`/organization/${id}`);
+        // SUCCESS
+        return res.redirect(`/organization/${id}`);
 
     } catch (error) {
         console.error(error);
-
-        req.flash('error', 'Error updating organization');
-        res.redirect(`/edit-organization/${id}`);
+        return res.status(500).send("Server error updating organization");
     }
 };

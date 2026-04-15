@@ -1,4 +1,5 @@
 import db from '../db.js';
+import pool from '../db.js';
 
 
 // =======================================================
@@ -182,7 +183,24 @@ export const getAllProjects = async () => {
     return result.rows;
 };
 
+export const postAssignCategory = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { categoryId } = req.body;
 
+        if (!categoryId) {
+            return res.send("Category is required");
+        }
+
+        // TODO: save to database later
+
+        res.redirect(`/project/${id}`);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server error");
+    }
+};
 
 
 //
@@ -199,3 +217,157 @@ export const assignCategoryToProject = async (projectId, categoryId) => {
 
 
 //
+
+
+export const processNewProjectForm = async (req, res) => {
+    try {
+        const {
+            title,
+            description,
+            location,
+            project_date,
+            organizationId
+        } = req.body;
+
+        let error = null;
+
+        //  SERVER-SIDE VALIDATION
+        if (!title || title.trim().length < 3) {
+            error = "Title must be at least 3 characters";
+        }
+        else if (!description || description.trim().length < 10) {
+            error = "Description must be at least 10 characters";
+        }
+        else if (!project_date) {
+            error = "Date is required";
+        }
+        else if (!organizationId) {
+            error = "Organization is required";
+        }
+
+        if (error) {
+            const organizations = await getAllOrganizations();
+
+            return res.status(400).render('new-project', {
+                title: 'Create Project',
+                organizations,
+                formData: req.body,
+                error
+            });
+        }
+
+        await createProject(
+            title,
+            description,
+            location,
+            project_date,
+            organizationId
+        );
+
+        return res.redirect('/projects');
+
+    } catch (error) {
+        console.error(error);
+
+        const organizations = await getAllOrganizations();
+
+        return res.status(500).render('new-project', {
+            title: 'Create Project',
+            organizations,
+            formData: req.body,
+            error: 'Error creating project'
+        });
+    }
+};
+
+
+
+
+
+//
+
+export const postEditProject = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const {
+            title,
+            description,
+            location,
+            project_date,
+            organizationId
+        } = req.body;
+
+        let error = null;
+
+        //  VALIDATION
+        if (!title || title.trim().length < 3) {
+            error = "Title must be at least 3 characters";
+        }
+        else if (!description || description.trim().length < 10) {
+            error = "Description must be at least 10 characters";
+        }
+        else if (!project_date) {
+            error = "Date is required";
+        }
+        else if (!organizationId) {
+            error = "Organization is required";
+        }
+
+        if (error) {
+            const project = await getProjectById(id);
+            const organizations = await getAllOrganizations();
+
+            return res.status(400).render('edit-project', {
+                title: 'Edit Project',
+                project,
+                organizations,
+                error
+            });
+        }
+
+        await updateProject(
+            id,
+            title,
+            description,
+            location,
+            project_date,
+            organizationId
+        );
+
+        return res.redirect(`/project/${id}`);
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+
+
+//
+
+export const getAssignCategoryForm = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // PROJECT DETAILS
+        const project = await getProjectById(id);
+
+        // safe
+        if (!project) {
+            return res.status(404).send("Project not found");
+        }
+
+        const categories = await getAllCategories();
+
+        res.render('assign-category', {
+            title: 'Assign Category',
+            project,
+            categories
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server error");
+    }
+};

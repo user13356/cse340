@@ -1,4 +1,5 @@
 import db from '../db.js';
+import pool from '../db.js';
 
 
 // =======================================================
@@ -15,6 +16,22 @@ export const getAllOrganizations = async () => {
 };
 
 
+export const getOrganizationById = async (id) => {
+    const result = await db.query(`
+        SELECT *
+        FROM organization
+        WHERE organization_id = $1
+    `, [id]);
+
+    return result.rows[0];
+};
+
+
+
+
+
+
+
 // =======================================================
 // GET ONE ORGANIZATION
 // =======================================================
@@ -29,9 +46,11 @@ export const getOrganizationDetails = async (id) => {
 };
 
 
+
 // =======================================================
 // CREATE ORGANIZATION
 // =======================================================
+
 export const createOrganization = async (
     name,
     description,
@@ -46,17 +65,11 @@ export const createOrganization = async (
         RETURNING organization_id;
     `, [name, description, contact_email, website, logo_filename]);
 
-    if (!result.rows[0]) {
-        throw new Error('Failed to create organization');
-    }
-
     return result.rows[0].organization_id;
 };
 
 
-// =======================================================
-// UPDATE ORGANIZATION
-// =======================================================
+
 export const updateOrganization = async (
     id,
     name,
@@ -76,9 +89,5 @@ export const updateOrganization = async (
         RETURNING organization_id;
     `, [name, description, contact_email, website, logo_filename, id]);
 
-    if (!result.rows[0]) {
-        throw new Error('Organization not found or update failed');
-    }
-
-    return result.rows[0].organization_id;
+    return result.rows[0];
 };

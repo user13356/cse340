@@ -15,7 +15,9 @@ import {
     showNewProjectForm,
     processNewProjectForm,
     getEditProject,
-    postEditProject
+    postEditProject,
+    getAssignCategoryForm,
+    postAssignCategory
 } from './projects.js';
 
 
@@ -26,6 +28,8 @@ import {
     postAddCategory,
     getEditCategory,
     postEditCategory
+    
+    
 } from './categories.js';
 
 
@@ -38,6 +42,7 @@ const router = express.Router();
 // ORGANIZATIONS
 // =======================================================
 router.get('/organizations', showOrganizationsPage);
+
 
 router.get('/organizations/new', showNewOrganizationForm);
 router.post('/organizations', processNewOrganizationForm);
@@ -84,6 +89,10 @@ router.post('/categories/edit/:id', postEditCategory);
 
 //
 
+// Assign Category
+
+router.get('/project/:id/assign-category', getAssignCategoryForm);
+router.post('/project/:id/assign-category', postAssignCategory);
 
 
 
