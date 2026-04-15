@@ -162,9 +162,9 @@ export const getEditProject = async (req, res, next) => {
             title: 'Edit Project',
             project,
             organizations,
-            errors: [],       
-            formData: {},     
-            success: null     
+            errors: [],
+            formData: {},
+            success: null
         });
 
     } catch (err) {
@@ -212,13 +212,13 @@ export const postEditProject = async (req, res, next) => {
             const organizations = await getAllOrganizations();
 
             return res.status(400).render('edit-project', {
-            title: 'Edit Project',
-            project,
-            organizations,
-            errors,
-            formData: req.body,
-            success: null   
-        });
+                title: 'Edit Project',
+                project,
+                organizations,
+                errors,
+                formData: req.body,
+                success: null
+            });
         }
 
         await updateProject(
