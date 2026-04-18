@@ -1,3 +1,4 @@
+<%- include('partials/header') %>
 <% if (projects && projects.length > 0) { %>
     <ul>
         <% projects.forEach(project => { %>
@@ -11,3 +12,4 @@
 <% } else { %>
     <p>No projects found in this category.</p>
 <% } %>
+<%- include('partials/footer') %>

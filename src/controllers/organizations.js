@@ -125,6 +125,8 @@ export const showOrganizationDetailsPage = async (req, res, next) => {
             projects
         });
 
+        res.render('dashboard', { user: req.session.user });
+
     } catch (error) {
         next(error);
     }

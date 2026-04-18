@@ -1,0 +1,10 @@
+<%- include('partials/header') %>
+
+<h1>Dashboard</h1>
+
+<% if (user) { %>
+    <p>Welcome <%= user.name %></p>
+    <p>Role: <%= user.role %></p>
+<% } %>
+
+<%- include('partials/footer') %>

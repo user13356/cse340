@@ -1,101 +1,93 @@
 import express from 'express';
 
 import {
+    showLoginPage,
+    showRegisterPage,
+    processLogin,
+    processRegister,
+    logout
+} from './authController.js';
+
+import { getAllUsers } from './userController.js';
+import { requireLogin, requireRole } from '../middleware/auth.js';
+
+// 👇 ADD THESE IMPORTS (VERY IMPORTANT)
+import {
     showOrganizationsPage,
     showOrganizationDetailsPage,
     showNewOrganizationForm,
-    processNewOrganizationForm,
-    showEditOrganizationForm,
-    processEditOrganizationForm
+    processNewOrganizationForm
 } from './organizations.js';
 
 import {
     showProjectsPage,
     showProjectDetailsPage,
     showNewProjectForm,
-    processNewProjectForm,
-    getEditProject,
-    postEditProject,
-    getAssignCategoryForm,
-    postAssignCategory
+    processNewProjectForm
 } from './projects.js';
-
 
 import {
     showCategoriesPage,
     showCategoryDetailsPage,
     getAddCategory,
-    postAddCategory,
-    getEditCategory,
-    postEditCategory
-    
-    
+    postAddCategory
 } from './categories.js';
 
-
-
+import { setUserRole } from './userController.js';
 
 const router = express.Router();
 
+router.post('/users/role', requireLogin, requireRole('admin'), setUserRole);
 
-// =======================================================
+// =====================
+// AUTH
+// =====================
+router.get('/login', showLoginPage);
+router.post('/login', processLogin);
+
+router.get('/register', showRegisterPage);
+router.post('/register', processRegister);
+
+router.get('/logout', logout);
+
+
+// =====================
+// DASHBOARD
+// =====================
+router.get('/dashboard', requireLogin, (req, res) => {
+    res.render('dashboard');
+});
+
+
+// =====================
+// USERS (ADMIN ONLY)
+// =====================
+router.get('/users', requireLogin, requireRole('admin'), getAllUsers);
+
+
+// =====================
 // ORGANIZATIONS
-// =======================================================
-router.get('/organizations', showOrganizationsPage);
+// =====================
+router.get('/organizations', requireLogin, showOrganizationsPage);
+router.get('/organizations/new', requireLogin, requireRole('admin'), showNewOrganizationForm);
+router.post('/organizations', requireLogin, requireRole('admin'), processNewOrganizationForm);
+router.get('/organization/:id', requireLogin, showOrganizationDetailsPage);
 
 
-router.get('/organizations/new', showNewOrganizationForm);
-router.post('/organizations', processNewOrganizationForm);
-
-router.get('/organization/:id', showOrganizationDetailsPage);
-
-router.get('/edit-organization/:id', showEditOrganizationForm);
-router.post('/edit-organization/:id', processEditOrganizationForm);
-
-//
-
-// LIST ALL PROJECTS
-router.get('/projects', showProjectsPage);
-
-// SHOW CREATE FORM
-router.get('/projects/new', showNewProjectForm);
-
-// PROCESS CREATE FORM
-router.post('/projects', processNewProjectForm);
-
-// SHOW SINGLE PROJECT
-router.get('/project/:id', showProjectDetailsPage);
-
-// SHOW EDIT FORM
-router.get('/edit-project/:id', getEditProject);
-
-// PROCESS EDIT FORM
-router.post('/edit-project/:id', postEditProject);
+// =====================
+// PROJECTS
+// =====================
+router.get('/projects', requireLogin, showProjectsPage);
+router.get('/projects/new', requireLogin, requireRole('admin'), showNewProjectForm);
+router.post('/projects', requireLogin, requireRole('admin'), processNewProjectForm);
+router.get('/project/:id', requireLogin, showProjectDetailsPage);
 
 
-// List all categories
-router.get('/categories', showCategoriesPage);
-
-
-// Category details (projects under category)
-
-router.get('/categories/add', getAddCategory);
-router.post('/categories/add', postAddCategory);
-
-router.get('/categories/:id', showCategoryDetailsPage);
-
-router.get('/categories/edit/:id', getEditCategory);
-router.post('/categories/edit/:id', postEditCategory);
-
-//
-
-// Assign Category
-
-router.get('/project/:id/assign-category', getAssignCategoryForm);
-router.post('/project/:id/assign-category', postAssignCategory);
-
-
-
-//
+// =====================
+// CATEGORIES
+// =====================
+router.get('/categories', requireLogin, showCategoriesPage);
+router.get('/categories/add', requireLogin, requireRole('admin'), getAddCategory);
+router.post('/categories/add', requireLogin, requireRole('admin'), postAddCategory);
 
 export default router;

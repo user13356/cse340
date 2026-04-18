@@ -21,8 +21,15 @@ app.use(express.json());
 app.use(session({
     secret: 'secret',
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false
 }));
+
+// 
+
+app.use((req, res, next) => {
+    res.locals.user = req.session.user || null;
+    next();
+});
 
 // =====================
 // FLASH (ONLY ONCE)
