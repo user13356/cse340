@@ -61,7 +61,7 @@ export async function showProjectDetailsPage(req, res) {
 }
 
 // =======================================================
-// SHOW NEW PROJECT FORM (FIXED - NO BLANK PAGE)
+// SHOW NEW PROJECT FORM 
 // =======================================================
 export const showNewProjectForm = async (req, res) => {
     try {

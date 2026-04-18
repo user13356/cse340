@@ -10,7 +10,7 @@ import router from './src/controllers/routes.js';
 const app = express();
 
 // =====================
-// BODY PARSING (KEEP THIS FIRST)
+// BODY PARSING 
 // =====================
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
