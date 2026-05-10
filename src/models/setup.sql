@@ -14,6 +14,8 @@ VALUES
 
 SELECT * FROM organization;
 
+<<<<<<< HEAD
+=======
 -- ========================================
 -- Category Table
 
@@ -161,3 +163,4 @@ END
 WHERE project_id IN (1,2,3);
 
 
+>>>>>>> 620fdde493914149ea6564db2226432bd0846b8e
