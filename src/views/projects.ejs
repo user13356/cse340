@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <%- include('partials/header') %>
 
 <main>
@@ -19,4 +20,44 @@
     </ul>
 </main>
 
+=======
+<%- include('partials/header') %>
+
+<main class="container">
+
+    <h1><%= title %></h1>
+
+    <section class="projects-wrapper">
+
+        <% let currentOrg = null; %>
+
+        <% projects.forEach(project => { %>
+
+            <% if (currentOrg !== project.organization_name) { %>
+                <% currentOrg = project.organization_name; %>
+
+                <h2 class="org-title">
+                    <%= currentOrg %>
+                </h2>
+            <% } %>
+
+            <div class="project-item">
+
+                <a href="/project/<%= project.project_id %>" class="project-title">
+                    <%= project.title %>
+                </a>
+
+                <p class="project-desc">
+                    <%= project.description %>
+                </p>
+
+            </div>
+
+        <% }) %>
+
+    </section>
+
+</main>
+
+>>>>>>> 233b7909a3142acbb3765031c0538eca6bdbf024
 <%- include('partials/footer') %>

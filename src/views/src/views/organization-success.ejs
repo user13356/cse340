@@ -1,0 +1,23 @@
+<%- include('partials/header') %>
+
+<main class="container">
+
+    <h1>Success</h1>
+
+    <p>Organization was successfully saved.</p>
+
+    <% if (organizationId) { %>
+        <p>
+            <a href="/organization/<%= organizationId %>">
+                View Organization
+            </a>
+        </p>
+    <% } %>
+
+    <p>
+        <a href="/organizations">Back to Organizations</a>
+    </p>
+
+</main>
+
+<%- include('partials/footer') %>

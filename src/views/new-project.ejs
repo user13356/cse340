@@ -1,0 +1,36 @@
+<%- include('partials/header') %>
+
+<main class="container">
+
+<h1><%= title %></h1>
+
+<!-- ERROR BLOCK -->
+<% if (error) { %>
+    <p style="color:red;"><%= error %></p>
+<% } %>
+
+<form action="/projects" method="POST">
+
+    <input type="text" name="title" placeholder="Title" required />
+
+    <textarea name="description" placeholder="Description" required></textarea>
+
+    <input type="text" name="location" placeholder="Location" />
+
+    <input type="date" name="project_date" required />
+
+    <select name="organizationId" required>
+        <% organizations.forEach(org => { %>
+            <option value="<%= org.organization_id %>">
+                <%= org.name %>
+            </option>
+        <% }) %>
+    </select>
+
+    <button type="submit">Create Project</button>
+
+</form>
+
+</main>
+
+<%- include('partials/footer') %>
