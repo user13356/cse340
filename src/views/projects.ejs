@@ -1,39 +1,22 @@
 <%- include('partials/header') %>
 
-<main class="container">
-
+<main>
     <h1><%= title %></h1>
 
-    <section class="projects-wrapper">
-
-        <% let currentOrg = null; %>
-
+    <ul>
         <% projects.forEach(project => { %>
-
-            <% if (currentOrg !== project.organization_name) { %>
-                <% currentOrg = project.organization_name; %>
-
-                <h2 class="org-title">
-                    <%= currentOrg %>
-                </h2>
-            <% } %>
-
-            <div class="project-item">
-
-                <a href="/project/<%= project.project_id %>" class="project-title">
-                    <%= project.title %>
-                </a>
-
-                <p class="project-desc">
-                    <%= project.description %>
-                </p>
-
-            </div>
-
-        <% }) %>
-
-    </section>
-
+            <li>
+                <strong>
+                    <%= project.project_date ? project.project_date.toDateString() : 'Date TBD' %>:
+                    <%= project.title %> (<%= project.organization_name %>)
+                </strong>
+                <p><%= project.description %></p>
+                <% if (project.location) { %>
+                    <p>Location: <%= project.location %></p>
+                <% } %>
+            </li>
+        <% }); %>
+    </ul>
 </main>
 
 <%- include('partials/footer') %>

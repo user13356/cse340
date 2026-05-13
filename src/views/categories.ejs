@@ -1,23 +1,19 @@
 <%- include('partials/header') %>
 
-<main>
-    <h1><%= title %></h1>
+    <main>
+        <h1>
+            <%= title %>
+        </h1>
 
-    <h3>We want to connect your business website around the globe.</h3>
+        <h3>We want to connect your business website around the globe.</h3>
 
-    <!--  Dynamic categories from database -->
-    <ul>
-        <% categories.forEach(category => { %>
-            <li>
-                <a href="/categories/edit/<%= category.category_id %>">Edit</a>
-                    <%= category.name %>
-                </a>
-            </li>
-        <% }); %>
-    </ul>
+        <li><a href="/environmental">Environmental</a></li>
+        <li><a href="/educational">Educational</a></li>
+        <li><a href="/community-service">Community Service</a></li>
+        <li><a href="/health-and-wellness">Health and Wellness</a></li>
+        <p></p>
+        <img class="main-logo" src="images/image_cat.webp" alt="CSE 340 Backend Categories">
 
-    <img class="main-logo" src="/images/image_cat.webp" alt="CSE 340 Backend Categories">
+    </main>
 
-</main>
-
-<%- include('partials/footer') %>
+    <%- include('partials/footer') %>

@@ -1,82 +1,82 @@
-
+// server.js
 import express from 'express';
-import session from 'express-session';
-import flash from 'connect-flash';
-import path from 'path';
 import { fileURLToPath } from 'url';
+import path from 'path';
 
-import router from './src/controllers/routes.js';
+// Import your database functions
+import { getAllOrganizations } from './src/models/organizations.js';
+import { getAllCategories } from './src/models/categories.js';
+import { getAllProjects } from './src/models/projects.js';
+import { testConnection } from './src/models/db.js';
 
-const app = express();
+// Environment and port
+const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
+const PORT = process.env.PORT || 3000;
 
-// =====================
-// BODY PARSING (KEEP THIS FIRST)
-// =====================
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
-// =====================
-// SESSION (ONLY ONCE)
-// =====================
-app.use(session({
-    secret: 'secret',
-    resave: false,
-    saveUninitialized: false
-}));
-
-// 
-
-app.use((req, res, next) => {
-    res.locals.user = req.session.user || null;
-    next();
-});
-
-// =====================
-// FLASH (ONLY ONCE)
-// =====================
-app.use(flash());
-
-// =====================
-// VIEWS
-// =====================
+// File paths
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const app = express();
+
+// Set EJS as the view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
 
-// =====================
-// STATIC FILES
-// =====================
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// =====================
-// GLOBAL VARS
-// =====================
-app.use((req, res, next) => {
-    res.locals.NODE_ENV = process.env.NODE_ENV || 'development';
-    next();
-});
+// -------- ROUTES -------- //
 
-// =====================
-// ROUTES
-// =====================
-app.use('/', router);
-
-// =====================
-// HOME
-// =====================
+// Home page
 app.get('/', (req, res) => {
     res.render('home', { title: 'Home' });
 });
-
-// =====================
-// 404
-// =====================
-app.use((req, res) => {
-    res.status(404).send('Page Not Found');
+// Organizations page
+app.get('/organizations', async (req, res) => {
+    try {
+        const organizations = await getAllOrganizations();
+        const title = 'Our Partner Organizations';
+        res.render('organizations', { title, organizations });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error loading organizations');
+    }
 });
 
-app.listen(3000, () => {
-    console.log('Server running on http://localhost:3000');
+// Projects page
+
+app.get('/projects', async (req, res) => {
+    try {
+        const projects = await getAllProjects();
+        const title = 'Service Projects';
+        res.render('projects', { title, projects });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error loading projects');
+    }
+});
+
+
+// Categories page
+app.get('/categories', (req, res) => {
+    const title = 'Service Project Categories';
+    res.render('categories', { title });
+});
+
+// Example category links (optional, adjust as needed)
+app.get('/categories/:name', (req, res) => {
+    const categoryName = req.params.name;
+    res.send(`You clicked category: ${categoryName}`);
+});
+
+// -------- START SERVER -------- //
+app.listen(PORT, async () => {
+    try {
+        await testConnection();
+        console.log(`Server is running at http://127.0.0.1:${PORT}`);
+        console.log(`Environment: ${NODE_ENV}`);
+    } catch (error) {
+        console.error('Error connecting to the database:', error);
+    }
 });
