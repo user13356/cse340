@@ -1,0 +1,23 @@
+<%- include('partials/header') %>
+
+<main>
+    <h1><%= title %></h1>
+
+    <h3>We want to connect your business website around the globe.</h3>
+
+    <!--  Dynamic categories from database -->
+    <ul>
+        <% categories.forEach(category => { %>
+            <li>
+                <a href="#">
+                    <%= category.name %>
+                </a>
+            </li>
+        <% }); %>
+    </ul>
+
+    <img class="main-logo" src="/images/image_cat.webp" alt="CSE 340 Backend Categories">
+
+</main>
+
+<%- include('partials/footer') %>

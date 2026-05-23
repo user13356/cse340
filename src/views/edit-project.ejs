@@ -1,0 +1,74 @@
+<%- include('partials/header') %>
+
+<main>
+    <h1>Edit Project</h1>
+
+    <!-- Flash Messages -->
+    <% if (error && error.length > 0) { %>
+        <% error.forEach(e => { %>
+            <p style="color:red;"><%= e %></p>
+        <% }) %>
+    <% } %>
+
+    <% if (success && success.length > 0) { %>
+        <% success.forEach(s => { %>
+            <p style="color:green;"><%= s %></p>
+        <% }) %>
+    <% } %>
+
+    <form action="/edit-project/<%= projectDetails.project_id %>" method="POST">
+
+        <div>
+            <label>Title</label>
+            <input
+                type="text"
+                name="title"
+                value="<%= (formData && formData.title) || projectDetails.title %>"
+                required
+            />
+        </div>
+
+        <div>
+            <label>Description</label>
+            <textarea name="description" required><%= (formData && formData.description) || projectDetails.description %></textarea>
+        </div>
+
+        <div>
+            <label>Location</label>
+            <input
+                type="text"
+                name="location"
+                value="<%= (formData && formData.location) || projectDetails.location %>"
+                required
+            />
+        </div>
+
+        <div>
+            <label>Date</label>
+            <input
+                type="date"
+                name="date"
+                value="<%= projectDetails.date ? new Date(projectDetails.date).toISOString().split('T')[0] : '' %>"
+                required
+            />
+        </div>
+
+        <div>
+            <label>Organization</label>
+            <select name="organizationId" required>
+                <% organizations.forEach(org => { %>
+                    <option
+                        value="<%= org.organization_id %>"
+                        <%= Number((formData && formData.organizationId) || projectDetails.organization_id) === org.organization_id ? 'selected' : '' %>
+                    >
+                        <%= org.name %>
+                    </option>
+                <% }) %>
+            </select>
+        </div>
+
+        <button type="submit">Update Project</button>
+    </form>
+</main>
+
+<%- include('partials/footer') %>
