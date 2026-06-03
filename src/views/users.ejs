@@ -1,0 +1,25 @@
+<%- include('partials/header') %>
+
+<h1>Users</h1>
+
+<ul>
+<% users.forEach(u => { %>
+    <li>
+        <%= u.name %> - <%= u.email %> - <%= u.role %>
+
+        <!-- Make Admin -->
+        <form method="POST" action="/users/role" style="display:inline;">
+            <input type="hidden" name="email" value="<%= u.email %>">
+            <input type="hidden" name="role" value="admin">
+            <button type="submit">Make Admin</button>
+        </form>
+
+        <!-- Make User -->
+        <form method="POST" action="/users/role" style="display:inline;">
+            <input type="hidden" name="email" value="<%= u.email %>">
+            <input type="hidden" name="role" value="user">
+            <button type="submit">Make User</button>
+        </form>
+    </li>
+<% }) %>
+</ul>
