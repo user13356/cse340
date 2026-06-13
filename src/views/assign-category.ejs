@@ -1,0 +1,41 @@
+<%- include('partials/header') %>
+
+<main class="container">
+
+    <h1><%= title %></h1>
+
+    <section class="project-details">
+
+        <h2>Assign Category to Project #<%= projectId %></h2>
+
+        <form action="/project/<%= projectId %>/assign-category" method="POST">
+
+            <div>
+                <label>Category</label>
+                <select name="categoryId" required>
+                    <% categories.forEach(cat => { %>
+                        <option value="<%= cat.category_id %>">
+                            <%= cat.name %>
+                        </option>
+                    <% }) %>
+                </select>
+            </div>
+            <p></p>
+            <p></p>
+             <button type="submit">Assign Category</button>
+            <p></p>
+            <p></p>
+        </form>
+
+        <br>
+
+        <!-- Back link -->
+        <a href="/project/<%= projectId %>">
+            ← Back to Project
+        </a>
+
+    </section>
+
+</main>
+
+<%- include('partials/footer') %>

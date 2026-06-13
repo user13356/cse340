@@ -1,0 +1,17 @@
+<%- include('partials/header') %>
+
+    <main>
+        <h1>Admin Dashboard</h1>
+
+        <p>Welcome, <%= user.name %>
+        </p>
+
+        <ul>
+            <li><a href="/users">Manage Users</a></li>
+            <li><a href="/organizations">Organizations</a></li>
+            <li><a href="/projects">Projects</a></li>
+            <li><a href="/categories">Categories</a></li>
+        </ul>
+    </main>
+
+    <%- include('partials/footer') %>

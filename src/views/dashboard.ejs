@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+
+<h1>Dashboard</h1>
+
+<% if (user) { %>
+    <p>Welcome <%= user.name %></p>
+    <p>Role: <%= user.role %></p>
+<% } %>
+
+<hr>
+
+<h2>My Volunteer Projects</h2>
+
+<% if (volunteerProjects && volunteerProjects.length > 0) { %>
+
+    <ul>
+        <% volunteerProjects.forEach(project => { %>
+            <li>
+                <strong><%= project.title %></strong> -
+                <%= new Date(project.project_date).toDateString() %>
+
+                <a href="/project/<%= project.project_id %>/unvolunteer">
+                    Remove
+                </a>
+            </li>
+        <% }) %>
+    </ul>
+
+<% } else { %>
+    <p>You are not volunteering for any projects yet.</p>
+<% } %>
+
+<%- include('partials/footer') %>
